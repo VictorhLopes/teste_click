@@ -4,9 +4,8 @@ from playwright.sync_api import sync_playwright
 from src.pages.bad_button_page import BadButtonPage
 
 def test_bad_button_click():
-    test_url = os.getenv('TEST_URL')
-    if not test_url:
-        raise RuntimeError('Defina TEST_URL com a URL da página que possui #badButton')
+    # Usa TEST_URL se definida; senão, fallback para a página oficial do desafio
+    test_url = os.getenv('TEST_URL', 'http://uitestingplayground.com/click')
 
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
@@ -16,8 +15,7 @@ def test_bad_button_click():
         bad = BadButtonPage(page, test_url)
         bad.goto()
         bad.physical_click_button()
-
-        assert bad.is_button_green(), 'O botão não ficou verde após clique físico.'
+        bad.assert_button_success_class()
 
         context.close()
         browser.close()
